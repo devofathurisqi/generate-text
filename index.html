@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Speech-to-Text Notes</title>
+  <style>
+    :root {
+      --primary: #007BFF;
+      --danger: #dc3545;
+      --bg: #f9f9f9;
+      --card-bg: white;
+      --text: #222;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 2rem;
+      max-width: 800px;
+      margin-inline: auto;
+    }
+
+    h1, h2 {
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin: 5px 5px 15px 0;
+      border: none;
+      border-radius: 8px;
+      background-color: var(--primary);
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s ease-in-out;
+    }
+
+    button:disabled {
+      background-color: #aaa;
+      cursor: not-allowed;
+    }
+
+    button:hover:not(:disabled) {
+      opacity: 0.9;
+    }
+
+    #transcript {
+      width: 100%;
+      min-height: 100px;
+      margin: 1rem 0;
+      padding: 15px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background: #fff;
+      resize: vertical;
+    }
+
+    #video-upload {
+      margin-bottom: 1rem;
+    }
+
+    video {
+      width: 100%;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+
+    .note {
+      background: var(--card-bg);
+      padding: 15px;
+      margin: 10px 0;
+      border-left: 5px solid var(--primary);
+      border-radius: 8px;
+      position: relative;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .note button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: var(--danger);
+      border: none;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 0.9rem;
+    }
+
+    .custom-upload {
+       display: inline-block;
+       background-color: #ffc107;
+       color: #000;
+       padding: 10px 20px;
+       font-weight: bold;
+       border-radius: 8px;
+       cursor: pointer;
+       margin-bottom: 1rem;
+       transition: background-color 0.2s ease-in-out;
+    }
+
+    .custom-upload:hover {
+      background-color: #e0a800;
+    }
+
+    video {
+      margin-top: 1rem;
+      width: 100%;
+      max-width: 600px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    button#export-pdf {
+       background-color: #28a745;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 1rem;
+      }
+      button {
+        width: 100%;
+        margin: 5px 0;
+      }
+      #video-player {
+        width: 100%;
+      }
+      button, textarea {
+      /* width: 100%; */
+      margin-bottom: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>🎤 Speech-to-Text Notes</h1>
+
+  <button id="start-btn">Start 🎙️</button>
+  <button id="stop-btn" disabled>Stop ⛔</button>
+  <button id="save-btn">Save 💾</button>
+
+  <textarea id="transcript" placeholder="Your speech will appear here..." readonly></textarea>
+
+  <hr>
+  <h2>📹 Video Transcription</h2>
+  <!-- <input type="file" id="video-upload" accept="video/*"> -->
+  <label class="custom-upload">
+    📁 Upload Video
+    <input type="file" id="video-upload" accept="video/*" hidden>
+  </label>
+  <span id="file-name" style="margin-left:10px; font-style: italic;"></span>
+  <video id="video-player" controls></video>
+  <button id="transcribe-video">Transcribe Video 🎞️</button>
+  <button id="export-pdf">Export Notes to PDF 📄</button>
+
+  <h2>📝 Saved Notes</h2>
+  <div id="notes-container"></div>
+
+  <script src="script.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</body>
+</html>
