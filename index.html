@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Speech-to-Text Notes</title>
+  <title>Support Your Work</title>
   <style>
     :root {
       --primary: #007BFF;
@@ -144,30 +144,43 @@
   </style>
 </head>
 <body>
-  <h1>🎤 Speech-to-Text Notes</h1>
+   <h1>🎤 Speech-to-Text Notes</h1>
+ 
+   <button id="start-btn">Start 🎙️</button>
+   <button id="stop-btn" disabled>Stop ⛔</button>
+   <button id="save-btn">Save 💾</button>
+ 
+   <textarea id="transcript" placeholder="Your speech will appear here..." readonly></textarea>
+ 
+   <hr>
+   <h2>📹 Video Transcription</h2>
+   <!-- <input type="file" id="video-upload" accept="video/*"> -->
+   <label class="custom-upload">
+     📁 Upload Video
+     <input type="file" id="video-upload" accept="video/*" hidden>
+   </label>
+   <span id="file-name" style="margin-left:10px; font-style: italic;"></span>
+   <video id="video-player" controls></video>
+   <button id="transcribe-video">Transcribe Video 🎞️</button>
+   <button id="export-pdf">Export Notes to PDF 📄</button>
 
-  <button id="start-btn">Start 🎙️</button>
-  <button id="stop-btn" disabled>Stop ⛔</button>
-  <button id="save-btn">Save 💾</button>
-
-  <textarea id="transcript" placeholder="Your speech will appear here..." readonly></textarea>
-
-  <hr>
-  <h2>📹 Video Transcription</h2>
-  <!-- <input type="file" id="video-upload" accept="video/*"> -->
-  <label class="custom-upload">
-    📁 Upload Video
-    <input type="file" id="video-upload" accept="video/*" hidden>
-  </label>
-  <span id="file-name" style="margin-left:10px; font-style: italic;"></span>
-  <video id="video-player" controls></video>
-  <button id="transcribe-video">Transcribe Video 🎞️</button>
-  <button id="export-pdf">Export Notes to PDF 📄</button>
-
-  <h2>📝 Saved Notes</h2>
-  <div id="notes-container"></div>
+   <h2>📝 Saved Notes</h2>
+   <div id="notes-container"></div>
+ 
+   <h2>📄 Document Summarizer</h2>
+   <label class="custom-upload">
+      📁 Upload PDF or Word
+      <input type="file" id="doc-upload" accept=".pdf,.doc,.docx" hidden>
+   </label>
+   <span id="doc-file-name" style="margin-left:10px; font-style: italic;"></span>
+   <br /><br />
+   
+   <button id="summarize-doc">Summarize 🧠</button>
 
   <script src="script.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.13.216/pdf.min.js"></script>
+  <script src="https://unpkg.com/mammoth/mammoth.browser.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </body>
 </html>

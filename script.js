@@ -10,6 +10,8 @@ const transcribeBtn = document.getElementById('transcribe-video');
 let recognition;
 let currentTranscript = '';
 let notes = JSON.parse(localStorage.getItem('speechNotes')) || [];
+const docUpload = document.getElementById("doc-upload");
+let uploadedDocContent = "";
 
 if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -149,6 +151,96 @@ videoInput.addEventListener('change', (e) => {
     const fileName = this.files[0] ? this.files[0].name : "No file chosen";
     document.getElementById('file-name').textContent = fileName;
   });
+
+  docUpload.addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    document.getElementById("doc-file-name").textContent = file.name;
+  
+    if (file.type === "application/pdf") {
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const pdfText = await extractPdfText(reader.result);
+        uploadedDocContent = pdfText;
+      };
+      reader.readAsArrayBuffer(file);
+    } else if (
+      file.name.endsWith(".docx") ||
+      file.type ===
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ) {
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const docText = await extractDocxText(reader.result);
+        uploadedDocContent = docText;
+      };
+      reader.readAsArrayBuffer(file);
+    } else {
+      alert("Unsupported file type.");
+    }
+  });
+  
+  async function extractPdfText(arrayBuffer) {
+    const pdfjsLib = window["pdfjs-dist/build/pdf"];
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.13.216/pdf.worker.min.js";
+  
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    let text = "";
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      text += content.items.map((item) => item.str).join(" ") + "\n";
+    }
+    return text;
+  }
+  
+  async function extractDocxText(arrayBuffer) {
+    const result = await window.mammoth.extractRawText({ arrayBuffer });
+    return result.value;
+  }
+  
+  document
+    .getElementById("summarize-doc")
+    .addEventListener("click", async () => {
+      if (!uploadedDocContent) return alert("No file uploaded or parsed yet.");
+  
+      const summarized = await callGeminiSummarizer(uploadedDocContent);
+  
+      const { jsPDF } = window.jspdf;
+
+      const doc = new jsPDF();
+      doc.text("Ringkasan Dokumen:", 10, 10);
+      doc.text(summarized, 10, 20, { maxWidth: 180 });
+      doc.save("ringkasan_devo.pdf");
+
+    });
+  
+  async function callGeminiSummarizer(text) {
+    const apiKey = "AIzaSyCulFn7sSwSuXjFiSSNXE_EoZB8RFtxrF4";
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text:
+                    "Ringkas dokumen ini dengan poin-poin penting yang mudah dibaca:\n\n" +
+                    text,
+                },
+              ],
+            },
+          ],
+        }),
+      }
+    );
+  
+    const data = await res.json();
+    return data?.candidates?.[0]?.content?.parts?.[0]?.text || "No result.";
+  }
 
 // Load existing notes
 renderNotes();
